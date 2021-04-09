@@ -1,0 +1,39 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26124.0
+MinimumVisualStudioVersion = 15.0.26124.0
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{B5243FCA-F292-40EC-A7F7-06E794FA8BA7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EplStats", "src\EplStats\EplStats.csproj", "{100A2426-DAF4-4914-9753-9C7484C28AFC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{100A2426-DAF4-4914-9753-9C7484C28AFC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{100A2426-DAF4-4914-9753-9C7484C28AFC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{100A2426-DAF4-4914-9753-9C7484C28AFC}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{100A2426-DAF4-4914-9753-9C7484C28AFC}.Debug|x64.Build.0 = Debug|Any CPU
+		{100A2426-DAF4-4914-9753-9C7484C28AFC}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{100A2426-DAF4-4914-9753-9C7484C28AFC}.Debug|x86.Build.0 = Debug|Any CPU
+		{100A2426-DAF4-4914-9753-9C7484C28AFC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{100A2426-DAF4-4914-9753-9C7484C28AFC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{100A2426-DAF4-4914-9753-9C7484C28AFC}.Release|x64.ActiveCfg = Release|Any CPU
+		{100A2426-DAF4-4914-9753-9C7484C28AFC}.Release|x64.Build.0 = Release|Any CPU
+		{100A2426-DAF4-4914-9753-9C7484C28AFC}.Release|x86.ActiveCfg = Release|Any CPU
+		{100A2426-DAF4-4914-9753-9C7484C28AFC}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{100A2426-DAF4-4914-9753-9C7484C28AFC} = {B5243FCA-F292-40EC-A7F7-06E794FA8BA7}
+	EndGlobalSection
+EndGlobal
