@@ -3,18 +3,23 @@ using Microsoft.Extensions.Configuration;
 
 namespace EplStats
 {
-    public class App
+    public interface IApp
     {
-        private readonly IConfiguration _configuration;
+        Task RunAsync();
+    }
 
-        public App(IConfiguration configuration)
+    public class App : IApp
+    {
+        private readonly IScript _script;
+
+        public App(IScript script)
         {
-            _configuration = configuration;
+            _script = script;
         }
 
-        public async Task Run()
+        public async Task RunAsync()
         {
-            
+            await _script.UpsertTeams();
         }
     }
 }
