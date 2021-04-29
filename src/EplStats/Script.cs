@@ -25,16 +25,29 @@ namespace EplStats
             var scrapedTeams = _scraper.ScrapeTeams();
 
             var newTeams = scrapedTeams.Except(currentTeams.Select(x => x.Name));
-            // Not efficent for bulk updates, but should only need to insert teams once a season
-            await _database.ExecuteCommandAsync(SqlStatements.InsertTeamsSql, newTeams.Select(x => new {Name = x, IsActive = true}));
+            if (newTeams.Any())
+            {
+                await _database.ExecuteCommandAsync(SqlStatements.InsertTeamsSql, newTeams.Select(x => new { Name = x, IsActive = true }));
+            }
 
-            var updatedTeams = currentTeams.Select(x => x.Name).Except(scrapedTeams);
+            var inactiveTeams = currentTeams.Where(x => x.IsActive).Select(x => x.Name).Except(scrapedTeams);
+            if (inactiveTeams.Any())
+            {
+                await _database.ExecuteCommandAsync(string.Format(SqlStatements.UpdateTeamsSql, "False"), inactiveTeams.Select(x => new { Name = x }));
+            }
+
+            var activeTeams = currentTeams.Where(x => !x.IsActive).Select(x => x.Name).Intersect(scrapedTeams);
+            if (activeTeams.Any())
+            {
+                await _database.ExecuteCommandAsync(string.Format(SqlStatements.UpdateTeamsSql, "True"), activeTeams.Select(x => new { Name = x }));
+            }
         }
 
         public static class SqlStatements
         {
             public static string GetAllTeamsSql => "select team_id as Id, team_name as Name, is_active as IsActive from epl.teams";
             public static string InsertTeamsSql => "insert into epl.teams (team_name, is_active) values (@Name, @IsActive)";
+            public static string UpdateTeamsSql => "update epl.teams set is_active = {0} where team_name = @Name";
         }
     }
 }
