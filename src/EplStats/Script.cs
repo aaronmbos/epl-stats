@@ -45,9 +45,9 @@ namespace EplStats
 
         public static class SqlStatements
         {
-            public static string GetAllTeamsSql => "select team_id as Id, team_name as Name, is_active as IsActive from epl.teams";
-            public static string InsertTeamsSql => "insert into epl.teams (team_name, is_active) values (@Name, @IsActive)";
-            public static string UpdateTeamsSql => "update epl.teams set is_active = {0} where team_name = @Name";
+            public static string GetAllTeamsSql => "SELECT team_id AS Id, team_name AS Name, is_active AS IsActive FROM epl.teams";
+            public static string InsertTeamsSql => "INSERT INTO epl.teams (team_name, is_active) VALUES (@Name, @IsActive)";
+            public static string UpdateTeamsSql => "UPDATE epl.teams SET is_active = {0} WHERE team_name = @Name";
         }
     }
 }

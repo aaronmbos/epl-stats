@@ -1,11 +1,6 @@
-﻿using System;
-
-using Dapper;
-using Npgsql;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Configuration;
 
 namespace EplStats
 {
