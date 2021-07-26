@@ -8,19 +8,33 @@ namespace EplStats
   public interface IScraper
     {
         IEnumerable<string> ScrapeTeams();
+        IEnumerable<string> ScrapePlayers();
     }
 
     public class Scraper : IScraper
     {
-        private const string PlayersSelector = "#filter>optgroup[label=\"By Team\"]>option:nth-child(1)";
-        private const string TeamsSelector = "";
+        private const string FplStatsUrl = @"https://fantasy.premierleague.com/statistics";
+        private const string PlayersSelector = "div#root div:nth-child(2)"; // Getting to the main div
+        private const string TeamsSelector = "#filter optgroup[label=\"By Team\"]";
+
+        public IEnumerable<string> ScrapePlayers()
+        {
+            using (IWebDriver driver = new FirefoxDriver())
+            {
+                driver.Navigate().GoToUrl(FplStatsUrl);
+                var players = driver.FindElement(By.CssSelector(PlayersSelector)).Text;
+                driver.Quit();
+
+                return new List<string>();
+            }
+        }
 
         public IEnumerable<string> ScrapeTeams()
         {
             using (IWebDriver driver = new FirefoxDriver())
             {
-                driver.Navigate().GoToUrl(@"https://fantasy.premierleague.com/statistics");
-                var teams = driver.FindElement(By.CssSelector("#filter optgroup[label=\"By Team\"]")).Text;
+                driver.Navigate().GoToUrl(FplStatsUrl);
+                var teams = driver.FindElement(By.CssSelector(TeamsSelector)).Text;
                 driver.Quit();
                 
                 return teams.Split(Environment.NewLine);

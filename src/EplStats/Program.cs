@@ -11,6 +11,7 @@ namespace EplStats
             using IHost host = CreateHostBuilder(args).Build();
             await host.Services.GetRequiredService<IApp>().RunAsync();
         }
+
         static IHostBuilder CreateHostBuilder(string[] args) => Host.CreateDefaultBuilder(args)
             .ConfigureServices((_, services) => 
             {

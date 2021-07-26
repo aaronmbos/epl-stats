@@ -6,6 +6,7 @@ namespace EplStats
     public interface IScript
     {
         Task UpsertTeams();
+        Task UpsertPlayers();
     }
 
     public class Script : IScript
@@ -41,6 +42,11 @@ namespace EplStats
             {
                 await _database.ExecuteCommandAsync(string.Format(SqlStatements.UpdateTeamsSql, "True"), activeTeams.Select(x => new { Name = x }));
             }
+        }
+
+        public async Task UpsertPlayers()
+        {
+            var scrapedPlayers = _scraper.ScrapePlayers();
         }
 
         public static class SqlStatements
