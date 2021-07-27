@@ -19,25 +19,36 @@ namespace EplStats
 
         public IEnumerable<string> ScrapePlayers()
         {
-            using (IWebDriver driver = new FirefoxDriver())
+            return Scrape<IEnumerable<string>>((driver) => 
             {
                 driver.Navigate().GoToUrl(FplStatsUrl);
                 var players = driver.FindElement(By.CssSelector(PlayersSelector)).Text;
-                driver.Quit();
-
-                return new List<string>();
-            }
+                return players.Split(Environment.NewLine);
+            });
         }
 
         public IEnumerable<string> ScrapeTeams()
         {
-            using (IWebDriver driver = new FirefoxDriver())
+            return Scrape<IEnumerable<string>>((driver) => 
             {
                 driver.Navigate().GoToUrl(FplStatsUrl);
-                var teams = driver.FindElement(By.CssSelector(TeamsSelector)).Text;
-                driver.Quit();
-                
+                var teams = driver.FindElement(By.CssSelector(TeamsSelector)).Text;                
                 return teams.Split(Environment.NewLine);
+            });
+        }
+
+        private T Scrape<T>(Func<IWebDriver, T> scrapeFunc)
+        {
+            using (IWebDriver driver = new FirefoxDriver())
+            {
+                try
+                {
+                    return scrapeFunc(driver);
+                }
+                finally 
+                {
+                    driver.Quit();
+                }
             }
         }
     }
