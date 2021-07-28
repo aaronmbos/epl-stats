@@ -1,3 +1,4 @@
+using System.Threading;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Firefox;
 using System;
@@ -11,19 +12,31 @@ namespace EplStats
         IEnumerable<string> ScrapePlayers();
     }
 
+    public static class CssSelectors
+    {
+        public static string FplStats => @"https://fantasy.premierleague.com/statistics";
+        public static string PlayerInfoButtons => "div#root div:nth-child(2) table tbody button";
+        public static string TeamsFromDropdown => "#filter optgroup[label=\"By Team\"]";
+        public static string PlayerModalClose => "div#root-dialog > div[role=\"presentation\"] > dialog > div div:nth-child(1) button";
+    }
+
     public class Scraper : IScraper
     {
-        private const string FplStatsUrl = @"https://fantasy.premierleague.com/statistics";
-        private const string PlayersSelector = "div#root div:nth-child(2)"; // Getting to the main div
-        private const string TeamsSelector = "#filter optgroup[label=\"By Team\"]";
-
         public IEnumerable<string> ScrapePlayers()
         {
             return Scrape<IEnumerable<string>>((driver) => 
             {
-                driver.Navigate().GoToUrl(FplStatsUrl);
-                var players = driver.FindElement(By.CssSelector(PlayersSelector)).Text;
-                return players.Split(Environment.NewLine);
+                driver.Navigate().GoToUrl(CssSelectors.FplStats);
+                foreach (var btn in driver.FindElements(By.CssSelector(CssSelectors.PlayerInfoButtons)))
+                {
+                    if (btn.Text.Contains("View player information")) 
+                    {
+                        btn.Click();
+                        // Close the modal dialog
+                        driver.FindElement(By.CssSelector(CssSelectors.PlayerModalClose)).Click();
+                    }
+                }
+                return new List<string>();
             });
         }
 
@@ -31,8 +44,8 @@ namespace EplStats
         {
             return Scrape<IEnumerable<string>>((driver) => 
             {
-                driver.Navigate().GoToUrl(FplStatsUrl);
-                var teams = driver.FindElement(By.CssSelector(TeamsSelector)).Text;                
+                driver.Navigate().GoToUrl(CssSelectors.FplStats);
+                var teams = driver.FindElement(By.CssSelector(CssSelectors.TeamsFromDropdown)).Text;
                 return teams.Split(Environment.NewLine);
             });
         }
