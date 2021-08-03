@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Firefox;
@@ -18,6 +19,9 @@ namespace EplStats
         public static string PlayerInfoButtons => "div#root div:nth-child(2) table tbody button";
         public static string TeamsFromDropdown => "#filter optgroup[label=\"By Team\"]";
         public static string PlayerModalClose => "div#root-dialog > div[role=\"presentation\"] > dialog > div div:nth-child(1) button";
+        public static string PlayerDialogStats => "div#root-dialog > div[role=\"presentation\"] > dialog > div div:nth-child(2) div";
+        public static string PlayerPages => "div#root div:nth-child(2) > div > div > div div:nth-child(3)";
+        public static string TableFooterButtons => "div#root div:nth-child(2) > div > div > div button";
     }
 
     public class Scraper : IScraper
@@ -27,18 +31,28 @@ namespace EplStats
             return Scrape<IEnumerable<string>>((driver) => 
             {
                 driver.Navigate().GoToUrl(CssSelectors.FplStats);
-                foreach (var btn in driver.FindElements(By.CssSelector(CssSelectors.PlayerInfoButtons)))
+                
+                var playerPageCount = GetPageCount(driver.FindElement(By.CssSelector(CssSelectors.PlayerPages)).Text);
+                for (int i = 0; i < playerPageCount; i++)
                 {
-                    if (btn.Text.Contains("View player information")) 
+                    foreach (var btn in driver.FindElements(By.CssSelector(CssSelectors.PlayerInfoButtons)))
                     {
-                        btn.Click();
-                        // Close the modal dialog
-                        driver.FindElement(By.CssSelector(CssSelectors.PlayerModalClose)).Click();
+                        if (btn.Text.Contains("View player information")) 
+                        {
+                            btn.Click();
+                            var playerDetails = driver.FindElement(By.CssSelector(CssSelectors.PlayerDialogStats)).Text;
+                            // Close the modal dialog
+                            driver.FindElement(By.CssSelector(CssSelectors.PlayerModalClose)).Click();
+                        }
                     }
+                    driver.FindElements(By.CssSelector(CssSelectors.TableFooterButtons)).First(x => x.Text == "Next").Click();
                 }
+                
                 return new List<string>();
             });
         }
+
+        private int GetPageCount(string rawText) => int.Parse(rawText.Split(' ', 3).Last());
 
         public IEnumerable<string> ScrapeTeams()
         {
