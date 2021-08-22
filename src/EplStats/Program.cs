@@ -13,7 +13,7 @@ namespace EplStats
         }
 
         static IHostBuilder CreateHostBuilder(string[] args) => Host.CreateDefaultBuilder(args)
-            .ConfigureServices((_, services) => 
+            .ConfigureServices((_, services) =>
             {
                 services.AddTransient<IScript, Script>();
                 services.AddTransient<IApp, App>();
