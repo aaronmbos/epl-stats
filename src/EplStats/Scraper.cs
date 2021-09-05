@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace EplStats
 {
-  public interface IScraper
+    public interface IScraper
     {
         IEnumerable<string> ScrapeTeams();
         IEnumerable<string> ScrapePlayers();
@@ -18,7 +18,7 @@ namespace EplStats
         public static string PlayerInfoButtons => "div#root div:nth-child(2) table tbody button";
         public static string TeamsFromDropdown => "#filter optgroup[label=\"By Team\"]";
         public static string PlayerModalClose => "div#root-dialog > div[role=\"presentation\"] > dialog > div div:nth-child(1) button";
-        public static string PlayerDialogStats => "div#root-dialog > div[role=\"presentation\"] > dialog > div div:nth-child(2) div";
+        public static string GetPlayerDialogStats(bool hasInjurySection) => $"div#root-dialog > div[role=\"presentation\"] > dialog > div > div:nth-child({(hasInjurySection ? "2" : "2")}){(hasInjurySection ? " div >" : "")} div";
         public static string PlayerPages => "div#root div:nth-child(2) > div > div > div div:nth-child(3)";
         public static string TableFooterButtons => "div#root div:nth-child(2) > div > div > div button";
     }
@@ -32,14 +32,17 @@ namespace EplStats
                 driver.Navigate().GoToUrl(CssSelectors.FplStats);
                 
                 var playerPageCount = GetPageCount(driver.FindElement(By.CssSelector(CssSelectors.PlayerPages)).Text);
+                var rawPlayerData = new List<string>();
                 for (int i = 0; i < playerPageCount; i++)
                 {
                     foreach (var btn in driver.FindElements(By.CssSelector(CssSelectors.PlayerInfoButtons)))
                     {
                         if (btn.Text.Contains("View player information")) 
                         {
+                            var hasInjurySection = btn.Text.Contains("chance of playing");
                             btn.Click();
-                            var playerDetails = driver.FindElement(By.CssSelector(CssSelectors.PlayerDialogStats)).Text;
+                            rawPlayerData.Add(driver.FindElement(By.CssSelector(CssSelectors.GetPlayerDialogStats(hasInjurySection))).Text);
+
                             // Close the modal dialog
                             driver.FindElement(By.CssSelector(CssSelectors.PlayerModalClose)).Click();
                         }
@@ -47,7 +50,7 @@ namespace EplStats
                     driver.FindElements(By.CssSelector(CssSelectors.TableFooterButtons)).First(x => x.Text == "Next").Click();
                 }
                 
-                return new List<string>();
+                return rawPlayerData;
             });
         }
 

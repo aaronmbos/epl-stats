@@ -15,7 +15,7 @@ namespace EplStats
 
         public async Task RunAsync()
         {
-            var teamsTask = _script.UpsertTeams();
+            var teamsTask = Task.FromResult<object>(null);//_script.UpsertTeams();
             var playersTask = _script.UpsertPlayers();
             
             await Task.WhenAll(teamsTask, playersTask);
