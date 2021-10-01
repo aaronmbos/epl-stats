@@ -9,7 +9,7 @@ namespace EplStats
     public interface IScraper
     {
         IEnumerable<string> ScrapeTeams();
-        IEnumerable<string> ScrapePlayers();
+        IEnumerable<PlayerStat> ScrapePlayers();
     }
 
     public static class CssSelectors
@@ -27,47 +27,50 @@ namespace EplStats
 
     public class Scraper : IScraper
     {
-        public IEnumerable<string> ScrapePlayers()
+        public IEnumerable<PlayerStat> ScrapePlayers()
         {
-            return Scrape<IEnumerable<string>>((driver) => 
+            return Scrape<IEnumerable<PlayerStat>>((driver) => 
             {
                 driver.Navigate().GoToUrl(CssSelectors.FplStats);
-                
                 var playerPageCount = GetPageCount(driver.FindElement(By.CssSelector(CssSelectors.PlayerPages)).Text);
-                var rawPlayerData = new List<string>();
 
-                for (int i = 0; i < playerPageCount; i++)
-                {
-                    foreach (var btn in driver.FindElements(By.CssSelector(CssSelectors.PlayerInfoButtons)))
-                    {
-                        if (btn.Text.Contains("View player information")) 
-                        {
-                            var hasAlertSection = btn.Text.Contains("chance of playing");
-                            btn.Click();
-                            rawPlayerData.Add(driver.FindElement(By.CssSelector(CssSelectors.GetPlayerStatsDialog(hasAlertSection))).Text);
-
-                            // Close the modal dialog
-                            driver.FindElement(By.CssSelector(CssSelectors.PlayerModalClose)).Click();
-                        }
-                    }
-                    driver.FindElements(By.CssSelector(CssSelectors.TableFooterButtons)).First(x => x.Text == "Next").Click();
-                }
-                // Name
-                // Position
-                // Team
-                // skip Form
-                // skip Gameweek points
-                // skip Total points
-                // skip Price
-                // skip skip Influence
-                // skip Creativity
-                // skip Threat
-                // skip skip Overall ICT
-                return rawPlayerData;
+                return GetGameweekPlayerStats(driver, playerPageCount);
             });
         }
 
         private int GetPageCount(string rawText) => int.Parse(rawText.Split(' ', 3).Last());
+
+        private IEnumerable<PlayerStat> GetGameweekPlayerStats(IWebDriver driver, int pageCount)
+        {
+            var playerStats = new List<PlayerStat>();
+            for (int i = 0; i < pageCount; i++)
+            {
+                foreach (var btn in driver.FindElements(By.CssSelector(CssSelectors.PlayerInfoButtons)))
+                {
+                    if (btn.Text.Contains("View player information")) 
+                    {
+                        var hasAlertSection = btn.Text.Contains("chance of playing");
+                        btn.Click();
+                        var rawPlayerData = driver.FindElement(By.CssSelector(CssSelectors.GetPlayerStatsDialog(hasAlertSection))).Text;
+                        playerStats.Add(ParsePlayerStat(rawPlayerData));
+
+                        // Close the modal dialog
+                        driver.FindElement(By.CssSelector(CssSelectors.PlayerModalClose)).Click();
+                    }
+                }
+                driver.FindElements(By.CssSelector(CssSelectors.TableFooterButtons)).First(x => x.Text == "Next").Click();
+            }
+
+            return playerStats;
+        }
+
+        private PlayerStat ParsePlayerStat(string rawPlayerStat)
+        {
+            var splitStat = rawPlayerStat.Split(Environment.NewLine);
+            // "Mohamed Salah\nMidfielder\nLiverpool\nForm\n9.0\nGW6\n7pts\nTotal\n57pts\nPrice\n£12.6\nTSB\n59.1%\nICT Rank for Midfielders\nInfluence\n1 of 250\nCreativity\n3 of 250\nThreat\n1 of 250\nICT Index\n1 of 250\nOverall ICT Rank\nICT Index\n1 of 611"
+            return new PlayerStat(splitStat[0], splitStat[2], splitStat[1], double.Parse(splitStat[4]), int.Parse(splitStat[6].Replace("pts", "")),
+                int.Parse(splitStat[8].Replace("pts", "")), splitStat[10], splitStat[12], splitStat[15], splitStat[17], splitStat[19], splitStat[21], splitStat[24]);
+        }
 
         public IEnumerable<string> ScrapeTeams()
         {
