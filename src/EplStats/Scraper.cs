@@ -52,7 +52,17 @@ namespace EplStats
                     }
                     driver.FindElements(By.CssSelector(CssSelectors.TableFooterButtons)).First(x => x.Text == "Next").Click();
                 }
-                
+                // Name
+                // Position
+                // Team
+                // skip Form
+                // skip Gameweek points
+                // skip Total points
+                // skip Price
+                // skip skip Influence
+                // skip Creativity
+                // skip Threat
+                // skip skip Overall ICT
                 return rawPlayerData;
             });
         }
