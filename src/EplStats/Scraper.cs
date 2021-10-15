@@ -9,7 +9,7 @@ namespace EplStats
     public interface IScraper
     {
         IEnumerable<string> ScrapeTeams();
-        IEnumerable<PlayerStat> ScrapePlayers();
+        IEnumerable<PlayerStat> ScrapePlayerStats();
     }
 
     public static class CssSelectors
@@ -27,7 +27,7 @@ namespace EplStats
 
     public class Scraper : IScraper
     {
-        public IEnumerable<PlayerStat> ScrapePlayers()
+        public IEnumerable<PlayerStat> ScrapePlayerStats()
         {
             return Scrape<IEnumerable<PlayerStat>>((driver) => 
             {

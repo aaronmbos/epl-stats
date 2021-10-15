@@ -6,7 +6,7 @@ namespace EplStats
     public interface IScript
     {
         Task UpsertTeams();
-        Task UpsertPlayers();
+        Task InsertPlayerStats();
     }
 
     public class Script : IScript
@@ -44,9 +44,16 @@ namespace EplStats
             }
         }
 
-        public async Task UpsertPlayers()
+        public async Task InsertPlayerStats()
         {
-            var scrapedPlayers = _scraper.ScrapePlayers();
+            var scrapedPlayerStats = _scraper.ScrapePlayerStats();
+
+            foreach (var playerStat in scrapedPlayerStats)
+            {
+                // TODO: Write the insert SQL -- maybe see if bulk is doable or faster
+                // Would this be faster to do in bulk?
+                await _database.ExecuteCommandAsync("the-insert", playerStat);
+            }
         }
 
         public static class SqlStatements
