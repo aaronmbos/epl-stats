@@ -29,7 +29,7 @@ namespace EplStats
     {
         public IEnumerable<PlayerStat> ScrapePlayerStats()
         {
-            return Scrape<IEnumerable<PlayerStat>>((driver) => 
+            return Scrape((driver) =>
             {
                 driver.Navigate().GoToUrl(CssSelectors.FplStats);
                 var playerPageCount = GetPageCount(driver.FindElement(By.CssSelector(CssSelectors.PlayerPages)).Text);
@@ -38,16 +38,16 @@ namespace EplStats
             });
         }
 
-        private int GetPageCount(string rawText) => int.Parse(rawText.Split(' ', 3).Last());
+        private static int GetPageCount(string rawText) => int.Parse(rawText.Split(' ', 3).Last());
 
-        private IEnumerable<PlayerStat> GetGameweekPlayerStats(IWebDriver driver, int pageCount)
+        private static IEnumerable<PlayerStat> GetGameweekPlayerStats(IWebDriver driver, int pageCount)
         {
             var playerStats = new List<PlayerStat>();
-            for (int i = 0; i < pageCount; i++)
+            for (var i = 0; i < pageCount; i++)
             {
                 foreach (var btn in driver.FindElements(By.CssSelector(CssSelectors.PlayerInfoButtons)))
                 {
-                    if (btn.Text.Contains("View player information")) 
+                    if (btn.Text.Contains("View player information"))
                     {
                         var hasAlertSection = btn.Text.Contains("chance of playing");
                         btn.Click();
@@ -64,7 +64,7 @@ namespace EplStats
             return playerStats;
         }
 
-        private PlayerStat ParsePlayerStat(string rawPlayerStat)
+        private static PlayerStat ParsePlayerStat(string rawPlayerStat)
         {
             var splitStat = rawPlayerStat.Split(Environment.NewLine);
             // "Mohamed Salah\nMidfielder\nLiverpool\nForm\n9.0\nGW6\n7pts\nTotal\n57pts\nPrice\n£12.6\nTSB\n59.1%\nICT Rank for Midfielders\nInfluence\n1 of 250\nCreativity\n3 of 250\nThreat\n1 of 250\nICT Index\n1 of 250\nOverall ICT Rank\nICT Index\n1 of 611"
@@ -74,7 +74,7 @@ namespace EplStats
 
         public IEnumerable<string> ScrapeTeams()
         {
-            return Scrape<IEnumerable<string>>((driver) => 
+            return Scrape<IEnumerable<string>>((driver) =>
             {
                 driver.Navigate().GoToUrl(CssSelectors.FplStats);
                 var teams = driver.FindElement(By.CssSelector(CssSelectors.TeamsFromDropdown)).Text;
@@ -82,7 +82,7 @@ namespace EplStats
             });
         }
 
-        private T Scrape<T>(Func<IWebDriver, T> scrapeFunc)
+        private static T Scrape<T>(Func<IWebDriver, T> scrapeFunc)
         {
             using (IWebDriver driver = new FirefoxDriver())
             {
@@ -90,7 +90,7 @@ namespace EplStats
                 {
                     return scrapeFunc(driver);
                 }
-                finally 
+                finally
                 {
                     driver.Quit();
                 }
