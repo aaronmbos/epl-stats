@@ -6,7 +6,7 @@ namespace EplStats
     {
         Task RunAsync();
     }
-    
+
     public class App : IApp
     {
         private readonly IScript _script;
@@ -15,9 +15,9 @@ namespace EplStats
 
         public async Task RunAsync()
         {
-            var teamsTask = Task.FromResult<object>(null);//_script.UpsertTeams();
+            var teamsTask = Task.FromResult<object>(null!);//_script.UpsertTeams();
             var playersTask = _script.InsertPlayerStats();
-            
+
             await Task.WhenAll(teamsTask, playersTask);
         }
     }

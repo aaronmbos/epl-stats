@@ -8,7 +8,7 @@ namespace EplStats
     {
         static async Task Main(string[] args)
         {
-            using IHost host = CreateHostBuilder(args).Build();
+            using var host = CreateHostBuilder(args).Build();
             await host.Services.GetRequiredService<IApp>().RunAsync();
         }
 
